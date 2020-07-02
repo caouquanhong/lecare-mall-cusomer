@@ -1,0 +1,9 @@
+server:
+  port: 8001
+spring:
+  application:
+    name: mall-customer-order
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:50101/eureka/

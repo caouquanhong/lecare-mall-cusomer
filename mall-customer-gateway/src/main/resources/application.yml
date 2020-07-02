@@ -1,0 +1,31 @@
+server:
+  port: 8088
+spring:
+ application:
+  name: mallGateWay
+ cloud:
+  gateway:
+   discovery:
+    #启用服务名称调用
+    locator:
+     # 是否和服务注册与发现组件结合，设置为 true 后可以直接使用应用名称调用服务
+      enabled: true
+     ##表示将请求路径的服务名配置改成小写  因为服务注册的时候，向注册中心注册时将服务名转成大写的了
+      lower-case-service-id: true
+   # 路由（routes：路由，它由唯一标识（ID）、目标服务地址（uri）、一组断言（predicates）和一组过滤器组成（filters）。filters 不是必需参数。）
+   routes:
+    # 路由标识（id：标识，具有唯一性）   简单尝试
+    - id: mall-order
+     # 目标服务地址（uri：地址，请求转发后的地址）
+      uri: lb://mall-customer-order
+     # 路由条件（predicates：断言，匹配 HTTP 请求内容）
+      predicates:
+       ## 转发地址格式为 uri/archive
+       - Path=/order/**
+
+eureka:
+ client:
+  service-url:
+   defaultZone: http://localhost:50101/eureka/
+ # 配置文件名称，用来标识不同环境的配置。由 spring.profiles.active 的值来决定使用哪组配置。
+

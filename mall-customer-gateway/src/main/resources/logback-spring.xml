@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="60 seconds">
+    <property name="LOG_HOME" value="/opt/tomcat/mylog/mall_order"/>
+
+    <!-- 彩色日志 -->
+    <!-- 彩色日志依赖的渲染类 -->
+    <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter"/>
+    <conversionRule conversionWord="wex"
+                    converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter"/>
+    <conversionRule conversionWord="wEx"
+                    converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter"/>
+    <!-- 彩色日志格式 -->
+    <property name="CONSOLE_LOG_PATTERN"
+              value="${CONSOLE_LOG_PATTERN:-%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(--){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"/>
+    />
+
+    <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="LOG_INFO"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder>
+            <pattern>
+                [%date{yyyy-MM-dd HH:mm:ss.SSS}] [ %-5level] %logger{96} - %msg%n
+            </pattern>
+
+            <charset>UTF-8</charset>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/info_log_%d{yyyyMMdd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy
+                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>200 MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>2</maxHistory>
+        </rollingPolicy>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+        <prudent>false</prudent>
+    </appender>
+
+    <appender name="LOG_ERROR"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder>
+            <pattern>
+                [%date{yyyy-MM-dd HH:mm:ss.SSS}] [ %-5level] %logger{96} - %msg%n
+            </pattern>
+
+            <charset>UTF-8</charset>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/error_log_%d{yyyyMMdd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy
+                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>200 MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>2</maxHistory>
+        </rollingPolicy>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+        <prudent>false</prudent>
+    </appender>
+
+
+    <appender name="Sentry" class="com.getsentry.raven.logback.SentryAppender">
+        <dsn>http://acac5d877a9d4a9ab96c93071d3ac6f8:2c8bc7b800da465c8a3dd426b3b986ce@sentry-dev.lejian.net/23</dsn>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+    </appender>
+
+    <logger name="logback.SentryAppenderIT" level="INFO">
+        <appender-ref ref="Sentry"/>
+    </logger>
+
+    <root level="INFO">
+        <appender-ref ref="Console"/>
+       <!-- <appender-ref ref="Sentry"/>-->
+        <appender-ref ref="LOG_INFO"/>
+        <appender-ref ref="LOG_ERROR"/>
+    </root>
+
+
+    <!-- 多配制环境设置 -->
+    <springProfile name="dev">
+        <property name="LOG_HOME" value="C://log"/>
+        <root level="debug">
+            <!--<appender-ref ref="Sentry"/>-->
+        </root>
+    </springProfile>
+
+    <springProfile name="test">
+        <property name="LOG_HOME" value="/opt/tomcat/mylog"/>
+        <root level="info">
+        </root>
+    </springProfile>
+
+    <springProfile name="prod">
+        <property name="LOG_HOME" value="/opt/tomcat/mylog"/>
+        <root level="info">
+            <appender-ref ref="LOG_INFO"/>
+            <appender-ref ref="LOG_ERROR"/>
+            <appender-ref ref="Sentry"/>
+        </root>
+    </springProfile>
+
+</configuration>

@@ -1,0 +1,32 @@
+{
+  server: {
+    port: 8088
+  },
+  spring: {
+    application: {
+      name: 'mallGateWay'
+    },
+    cloud: {
+      gateway: {
+        discovery: {
+          locator: {
+            enabled: true,
+            'lower-case-service-id': true
+          }
+        },
+        routes: [{
+                   id: 'mall-order',
+                   uri: 'lb://mall-customer-order',
+                   predicates: ['Path=/order/**']
+                 }]
+      }
+    }
+  },
+  eureka: {
+    client: {
+      'service-url': {
+        defaultZone: 'http://localhost:50101/eureka/'
+      }
+    }
+  }
+}
